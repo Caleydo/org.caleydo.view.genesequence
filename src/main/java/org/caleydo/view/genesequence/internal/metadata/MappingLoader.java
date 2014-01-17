@@ -6,12 +6,9 @@
 package org.caleydo.view.genesequence.internal.metadata;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.caleydo.core.data.collection.EDataClass;
 import org.caleydo.core.data.collection.EDataType;
@@ -30,9 +27,12 @@ import org.caleydo.core.io.DataSetDescription;
 import org.caleydo.core.io.IDSpecification;
 import org.caleydo.core.io.parser.ascii.IDMappingParser;
 import org.caleydo.core.manager.GeneralManager;
+import org.caleydo.core.serialize.ZipUtils;
 import org.caleydo.core.util.color.Color;
 import org.caleydo.core.util.logging.Logger;
+import org.caleydo.core.util.system.RemoteFile;
 import org.caleydo.datadomain.genetic.EGeneIDTypes;
+import org.caleydo.datadomain.genetic.GeneticMetaData;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -45,21 +45,6 @@ public class MappingLoader implements IDataDomainInitialization, IRunnableWithPr
 	private static final String URL_PATTERN = GeneralManager.DATA_URL_PREFIX + "mappings/%s_sequence.zip";
 	private static final Logger log = Logger.create(MappingLoader.class);
 	private static boolean isAlreadyInitialized = false;
-
-	private static final File BASEDIR;
-
-	static {
-		File f;
-		try {
-			f = File.createTempFile("chromosomeData", "");
-		} catch (IOException e) {
-			log.error("can't create temp dir");
-			f = new File("chromsomeData");
-		}
-		BASEDIR = f;
-		BASEDIR.delete();
-		BASEDIR.deleteOnExit();
-	}
 
 	public static ATableBasedDataDomain chromoseDataDomain;
 	public static ATableBasedDataDomain locationDataDomain;
@@ -201,39 +186,23 @@ public class MappingLoader implements IDataDomainInitialization, IRunnableWithPr
 	}
 
 	private static File prepareFile(IProgressMonitor monitor) {
-//		URL url = null;
-//		try {
-//			url = new URL(String.format(URL_PATTERN, GeneticMetaData.getOrganism().name().toLowerCase()));
-//			RemoteFile zip = RemoteFile.of(url);
-//			File localZip = zip.getOrLoad(true, monitor, "Caching Mapping Data (this may take a while): Downloading "
-//					+ GeneticMetaData.getOrganism().getLabel() + " (%2$d MB)");
-//			if (localZip == null || !localZip.exists()) {
-//				log.error("can't download: " + url);
-//				return null;
-//			}
-//			File unpacked = new File(localZip.getParentFile(), localZip.getName().replaceAll("\\.zip", ""));
-//			if (unpacked.exists())
-//				return unpacked;
-//			ZipUtils.unzipToDirectory(localZip.getAbsolutePath(), unpacked.getAbsolutePath());
-//			return unpacked;
-//		} catch (MalformedURLException e) {
-//			log.error("can't download: " + url);
-//			return null;
-//		}
-		if (BASEDIR.exists())
-			return BASEDIR;
+		URL url = null;
 		try {
-			for (String file : Arrays.asList("gene.genome.gaf.csv", "gene.genome.gaf.gene2loc.csv",
-					"gene.genome.gaf.loc2chr.csv", "chromosomeMetaData.csv")) {
-				try (InputStream in = MappingLoader.class.getResourceAsStream("/" + file)) {
-					final File fi = new File(BASEDIR, file);
-					fi.mkdirs();
-					Files.copy(in, fi.toPath(), StandardCopyOption.REPLACE_EXISTING);
-				}
+			url = new URL(String.format(URL_PATTERN, GeneticMetaData.getOrganism().name().toLowerCase()));
+			RemoteFile zip = RemoteFile.of(url);
+			File localZip = zip.getOrLoad(true, monitor, "Caching Mapping Data (this may take a while): Downloading "
+					+ GeneticMetaData.getOrganism().getLabel() + " (%2$d MB)");
+			if (localZip == null || !localZip.exists()) {
+				log.error("can't download: " + url);
+				return null;
 			}
-			return BASEDIR;
-		} catch (IOException e) {
-			log.error("can't extract to temp dir",e);
+			File unpacked = new File(localZip.getParentFile(), localZip.getName().replaceAll("\\.zip", ""));
+			if (unpacked.exists())
+				return unpacked;
+			ZipUtils.unzipToDirectory(localZip.getAbsolutePath(), unpacked.getAbsolutePath());
+			return unpacked;
+		} catch (MalformedURLException e) {
+			log.error("can't download: " + url);
 			return null;
 		}
 
