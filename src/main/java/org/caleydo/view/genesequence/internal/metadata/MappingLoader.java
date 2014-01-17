@@ -3,7 +3,7 @@
  * Copyright (c) The Caleydo Team. All rights reserved.
  * Licensed under the new BSD license, available at http://caleydo.org/license
  *******************************************************************************/
-package org.caleydo.view.genesequence.internal;
+package org.caleydo.view.genesequence.internal.metadata;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,15 +15,17 @@ import java.util.Arrays;
 
 import org.caleydo.core.data.collection.EDataClass;
 import org.caleydo.core.data.collection.EDataType;
+import org.caleydo.core.data.collection.table.TableUtils;
 import org.caleydo.core.data.datadomain.ATableBasedDataDomain;
+import org.caleydo.core.data.datadomain.DataDomainManager;
 import org.caleydo.core.data.datadomain.IDataDomainInitialization;
 import org.caleydo.core.data.perspective.table.TablePerspective;
 import org.caleydo.core.data.perspective.variable.Perspective;
 import org.caleydo.core.id.IDCategory;
 import org.caleydo.core.id.IDType;
+import org.caleydo.core.id.IDTypeInitializer;
 import org.caleydo.core.io.ColumnDescription;
 import org.caleydo.core.io.DataDescription;
-import org.caleydo.core.io.DataLoader;
 import org.caleydo.core.io.DataSetDescription;
 import org.caleydo.core.io.IDSpecification;
 import org.caleydo.core.io.parser.ascii.IDMappingParser;
@@ -92,12 +94,31 @@ public class MappingLoader implements IDataDomainInitialization, IRunnableWithPr
 				cat, true, true, false, null, null);
 
 		// load not just the mapping but also the data domain with the meta data
-		chromoseDataDomain = DataLoader.loadData(createChromosomeDataDesc(chromosome, base), new NullProgressMonitor());
+		chromoseDataDomain = loadData(createChromosomeDataDesc(chromosome, base));
 		fixLabels(chromoseDataDomain, "Chromosome Name", "Chromosome Total Length");
-		locationDataDomain = DataLoader.loadData(createLocationDataDesc(location, base), new NullProgressMonitor());
-		fixLabels(locationDataDomain, "Chromosome Location (Start)", "Chromosome Location (Start)",
+		locationDataDomain = loadData(createLocationDataDesc(location, base));
+		fixLabels(locationDataDomain, "Chromosome Location (Start)", "Chromosome Location (End)",
 				"Chromosome Location (Strand)");
 		return true;
+	}
+
+	/**
+	 * @param createChromosomeDataDesc
+	 * @param nullProgressMonitor
+	 * @return
+	 */
+	private static ATableBasedDataDomain loadData(DataSetDescription d) {
+		d = IDTypeInitializer.initIDs(d);
+		GeneMetaDataDataDomain dataDomain = new GeneMetaDataDataDomain();
+		DataDomainManager.get().register(dataDomain);
+		try {
+			// the place the matrix is stored:
+			TableUtils.loadData(dataDomain, d, true, true);
+		} catch (Exception e) {
+			log.error("Failed to load data for dataset " + d.getDataSetName(), e);
+			DataDomainManager.get().unregister(dataDomain);
+		}
+		return null;
 	}
 
 	/**

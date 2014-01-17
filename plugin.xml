@@ -12,13 +12,19 @@
    <extension
          point="org.caleydo.datadomain.DataDomainInitialization">
       <DataDomainInitialization
-            class="org.caleydo.view.genesequence.internal.MappingLoader">
+            class="org.caleydo.view.genesequence.internal.metadata.MappingLoader">
       </DataDomainInitialization>
    </extension>
    <extension
          point="org.caleydo.core.CacheInitializer">
       <initializer
-            class="org.caleydo.view.genesequence.internal.MappingLoader">
+            class="org.caleydo.view.genesequence.internal.metadata.MappingLoader">
       </initializer>
+   </extension>
+   <extension
+         point="org.caleydo.datadomain.DataDomain">
+      <DataDomain
+            class="org.caleydo.view.genesequence.internal.metadata.GeneMetaDataDataDomain">
+      </DataDomain>
    </extension>
 </plugin>
