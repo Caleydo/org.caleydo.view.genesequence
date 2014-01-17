@@ -7,7 +7,9 @@ package org.caleydo.view.genesequence.ui;
 
 import gleem.linalg.Vec2f;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.caleydo.core.data.collection.EDimension;
 import org.caleydo.core.data.selection.MultiSelectionManagerMixin;
@@ -36,6 +38,8 @@ public class ChromosomeLocationElement extends PickableGLElement implements
 	private final EDimension dim;
 	private final List<Integer> data;
 	private final Function<Integer, Vec2f> id2range;
+	private float start = Float.NaN;
+	private float end = Float.NaN;
 
 	public ChromosomeLocationElement(EDimension dim, List<Integer> data, IDType idType,
 			Function<Integer, Vec2f> id2range) {
@@ -46,13 +50,84 @@ public class ChromosomeLocationElement extends PickableGLElement implements
 		this.id2range = id2range;
 	}
 
+	/**
+	 * @return the data, see {@link #data}
+	 */
+	public List<Integer> getData() {
+		return data;
+	}
+
+	public IDType getIDType() {
+		return noIDType() ? null : selections.get(0).getIDType();
+	}
+
+	@Override
+	protected void onDragDetected(Pick pick) {
+		if (noIDType())
+			return;
+		if (!pick.isAnyDragging())
+			pick.setDoDragging(true);
+		this.start = dim.select(toRelative(pick.getPickedPoint())) / dim.select(getSize());
+		super.onDragDetected(pick);
+	}
+
+	/**
+	 * @return
+	 */
+	private boolean noIDType() {
+		return selections.isEmpty();
+	}
+
+	@Override
+	protected void onDragged(Pick pick) {
+		if (noIDType())
+			return;
+		this.end = dim.select(toRelative(pick.getPickedPoint())) / dim.select(getSize());
+
+		updateSelection();
+
+		repaint();
+		super.onDragged(pick);
+	}
+
+	private void updateSelection() {
+		SelectionManager m = selections.get(0);
+		Set<Integer> toSelect = new HashSet<>();
+		float a = Math.min(start, end);
+		float b = Math.max(start, end);
+		for (Integer id : data) {
+			Vec2f v = id2range.apply(id);
+			if (v == null || Float.isNaN(v.x()) || Float.isNaN(v.y()))
+				continue;
+			if ((v.x() >= a && v.x() <= b) || (v.y() >= a && v.y() <= b) || (v.x() < a && v.y() > b))
+				toSelect.add(id);
+		}
+		m.clearSelection(SelectionType.SELECTION);
+		m.addToType(SelectionType.SELECTION, toSelect);
+		selections.fireSelectionDelta(m);
+	}
+
+	@Override
+	protected void onClicked(Pick pick) {
+		if (noIDType())
+			return;
+		if (!Float.isNaN(start)) {
+			selections.get(0).clearSelection(SelectionType.SELECTION);
+			selections.fireSelectionDelta(selections.get(0));
+			start = Float.NaN;
+			end = Float.NaN;
+			repaint();
+		}
+		super.onClicked(pick);
+	}
+
 	@Override
 	protected void renderImpl(GLGraphics g, float w, float h) {
 		SelectionManager manager = selections.isEmpty() ? null : selections.get(0);
 		int n = data.size();
 		float o = dim.opposite().select(w, h) * 0.1f;
 		if (dim.isHorizontal()) {
-			g.color(Color.BLACK).drawLine(0, h * 0.5f, h, h * 0.5f);
+			g.color(Color.BLACK).drawLine(0, h * 0.5f, w, h * 0.5f);
 
 		} else {
 			g.color(Color.BLACK).drawLine(w * 0.5f, 0, w * 0.5f, h);
@@ -69,9 +144,21 @@ public class ChromosomeLocationElement extends PickableGLElement implements
 				g.color(c.r, c.g, c.b, 0.5f);
 			}
 			if (dim.isHorizontal()) {
-				g.fillRect(w * v.x(), o, w * v.y(), h - o);
+				g.fillRect(w * v.x(), o, Math.max(w * v.y(), 1), h - o * 2);
 			} else {
-				g.fillRect(o, h * v.x(), w - o, h * v.y());
+				g.fillRect(o, h * v.x(), w - o * 2, Math.max(h * v.y(), 1));
+			}
+		}
+
+		if (!Float.isNaN(start) && !Float.isNaN(end)) {
+			final Color c = SelectionType.SELECTION.getColor();
+			g.color(c.r, c.g, c.b, 0.2f);
+			float a = Math.min(start, end);
+			float b = Math.max(start, end);
+			if (dim.isHorizontal()) {
+				g.fillRect(a * w, o, (b - a) * w, h - o * 2);
+			} else {
+				g.fillRect(o, a * h, w - o * 2, (b - a) * h);
 			}
 		}
 		super.renderImpl(g, w, h);
@@ -82,18 +169,6 @@ public class ChromosomeLocationElement extends PickableGLElement implements
 	 */
 	public Function<Integer, Vec2f> getId2range() {
 		return id2range;
-	}
-
-	@Override
-	protected void onMouseMoved(Pick pick) {
-
-		super.onMouseMoved(pick);
-	}
-
-	@Override
-	protected void onClicked(Pick pick) {
-
-		super.onClicked(pick);
 	}
 
 	/**
@@ -109,6 +184,7 @@ public class ChromosomeLocationElement extends PickableGLElement implements
 	@Override
 	public void onSelectionUpdate(SelectionManager manager) {
 		repaint();
+		this.start = Float.NaN;
 	}
 
 	@Override

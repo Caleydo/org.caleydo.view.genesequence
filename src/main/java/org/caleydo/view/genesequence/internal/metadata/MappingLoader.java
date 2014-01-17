@@ -110,6 +110,8 @@ public class MappingLoader implements IDataDomainInitialization, IRunnableWithPr
 	private static ATableBasedDataDomain loadData(DataSetDescription d) {
 		d = IDTypeInitializer.initIDs(d);
 		GeneMetaDataDataDomain dataDomain = new GeneMetaDataDataDomain();
+		dataDomain.setDataSetDescription(d);
+		dataDomain.init();
 		DataDomainManager.get().register(dataDomain);
 		try {
 			// the place the matrix is stored:
@@ -118,7 +120,7 @@ public class MappingLoader implements IDataDomainInitialization, IRunnableWithPr
 			log.error("Failed to load data for dataset " + d.getDataSetName(), e);
 			DataDomainManager.get().unregister(dataDomain);
 		}
-		return null;
+		return dataDomain;
 	}
 
 	/**

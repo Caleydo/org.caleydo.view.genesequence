@@ -20,8 +20,8 @@ public class GeneLocationMetaData {
 	 */
 	public static Vec2i getLocation(Integer geneLocationRecordID) {
 		ATableBasedDataDomain d = MappingLoader.locationDataDomain;
-		Object start = d.getTable().getRaw(1, geneLocationRecordID);
-		Object end = d.getTable().getRaw(2, geneLocationRecordID);
+		Object start = d.getTable().getRaw(0, geneLocationRecordID);
+		Object end = d.getTable().getRaw(1, geneLocationRecordID);
 		if (!(start instanceof Number) || !(end instanceof Number))
 			return null;
 		Vec2i v = new Vec2i();

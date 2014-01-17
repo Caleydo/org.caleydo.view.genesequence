@@ -86,6 +86,6 @@ public class Gene2ChromosomeLocation implements Function<Integer, Vec2f> {
 			return null;
 		// normalize
 		float v = 1.f / chromosomeTotalLength;
-		return new Vec2f(loc.x() * v, loc.y() * v);
+		return new Vec2f(loc.x() * v, (loc.y() - loc.x()) * v);
 	}
 }
