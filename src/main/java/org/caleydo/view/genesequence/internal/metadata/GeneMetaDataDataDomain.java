@@ -10,8 +10,10 @@ import org.caleydo.core.data.datadomain.DataDomainManager;
 import org.caleydo.core.id.IDCreator;
 
 /**
+ * a special {@link ATableBasedDataDomain} which won't be serialized
+ * 
  * @author Samuel Gratzl
- *
+ * 
  */
 public class GeneMetaDataDataDomain extends ATableBasedDataDomain {
 

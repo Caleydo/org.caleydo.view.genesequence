@@ -21,6 +21,8 @@ import com.google.common.collect.Multiset;
 
 
 /**
+ * converts the .gaf file to three files containing the mappings as well as the metadata information
+ *
  * @author Samuel Gratzl
  *
  */

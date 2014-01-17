@@ -32,9 +32,9 @@ public class Gene2ChromosomeLocation implements Function<Integer, Vec2f> {
 	public Gene2ChromosomeLocation(IDType in, String chromosome) {
 		IDMappingManager mapper = IDMappingManagerRegistry.get().getIDMappingManager(in);
 
-		IDType geneLocation = MappingLoader.locationDataDomain.getRecordIDType();
+		IDType geneLocation = GeneLocationMetaData.getGeneLocationIDType();
 		gene2genelocation = mapper.getIDTypeMapper(in, geneLocation);
-		genelocation2chromosome = mapper.getIDTypeMapper(geneLocation, MappingLoader.chromosome);
+		genelocation2chromosome = mapper.getIDTypeMapper(geneLocation, ChromosomeMetaData.chromosome);
 
 		this.chromosome = chromosome;
 		chromosomeTotalLength = ChromosomeMetaData.getTotalLength(chromosome);

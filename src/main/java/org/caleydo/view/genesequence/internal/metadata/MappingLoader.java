@@ -5,6 +5,11 @@
  *******************************************************************************/
 package org.caleydo.view.genesequence.internal.metadata;
 
+import static org.caleydo.view.genesequence.internal.metadata.ChromosomeMetaData.chromoseDataDomain;
+import static org.caleydo.view.genesequence.internal.metadata.ChromosomeMetaData.chromosome;
+import static org.caleydo.view.genesequence.internal.metadata.GeneLocationMetaData.location;
+import static org.caleydo.view.genesequence.internal.metadata.GeneLocationMetaData.locationDataDomain;
+
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
@@ -46,11 +51,6 @@ public class MappingLoader implements IDataDomainInitialization, IRunnableWithPr
 	private static final Logger log = Logger.create(MappingLoader.class);
 	private static boolean isAlreadyInitialized = false;
 
-	public static ATableBasedDataDomain chromoseDataDomain;
-	public static ATableBasedDataDomain locationDataDomain;
-	public static IDType chromosome;
-	public static IDType location;
-
 	@Override
 	public void createIDTypesAndMapping() {
 		if (isAlreadyInitialized)
@@ -69,15 +69,18 @@ public class MappingLoader implements IDataDomainInitialization, IRunnableWithPr
 		if (geneSymbol == null) // other not initialized
 			return false;
 
+		// register new id types
 		final IDCategory cat = geneSymbol.getIDCategory();
 		chromosome = IDType.registerType("Chromosome", cat, EDataType.STRING);
 		location = IDType.registerType("ChromosomeLocation", cat, EDataType.STRING);
 
+		// load mappings
 		IDMappingParser.loadMapping(toFile(base, "gene.genome.gaf.gene2loc.csv"), 1, -1, geneSymbol, location,
 				"\t", cat, true, true, false, null, null);
 		IDMappingParser.loadMapping(toFile(base, "gene.genome.gaf.loc2chr.csv"), 1, -1, location, chromosome, "\t",
 				cat, true, true, false, null, null);
 
+		// load meta data
 		// load not just the mapping but also the data domain with the meta data
 		chromoseDataDomain = loadData(createChromosomeDataDesc(chromosome, base));
 		fixLabels(chromoseDataDomain, "Chromosome Name", "Chromosome Total Length");
