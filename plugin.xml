@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.caleydo.ui.GLElementFactory">
+      <factory
+            factory="org.caleydo.view.genesequence.internal.GeneSequenceFactory"
+            icon="resources/icons/icon.png"
+            name="Gene Sequence">
+      </factory>
+   </extension>
+   <extension
+         point="org.caleydo.datadomain.DataDomainInitialization">
+      <DataDomainInitialization
+            class="org.caleydo.view.genesequence.internal.MappingLoader">
+      </DataDomainInitialization>
+   </extension>
+   <extension
+         point="org.caleydo.core.CacheInitializer">
+      <initializer
+            class="org.caleydo.view.genesequence.internal.MappingLoader">
+      </initializer>
+   </extension>
+</plugin>
