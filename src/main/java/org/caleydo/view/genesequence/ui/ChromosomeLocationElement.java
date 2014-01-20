@@ -35,9 +35,14 @@ public class ChromosomeLocationElement extends PickableGLElement implements
 
 	@DeepScan
 	private final MultiSelectionManagerMixin selections = new MultiSelectionManagerMixin(this);
+
 	private final EDimension dim;
 	private final List<Integer> data;
+	/**
+	 * convert a given id to a normalized range
+	 */
 	private final Function<Integer, Vec2f> id2range;
+
 	private float start = Float.NaN;
 	private float end = Float.NaN;
 
@@ -68,7 +73,6 @@ public class ChromosomeLocationElement extends PickableGLElement implements
 		if (!pick.isAnyDragging())
 			pick.setDoDragging(true);
 		this.start = dim.select(toRelative(pick.getPickedPoint())) / dim.select(getSize());
-		super.onDragDetected(pick);
 	}
 
 	/**
@@ -87,7 +91,6 @@ public class ChromosomeLocationElement extends PickableGLElement implements
 		updateSelection();
 
 		repaint();
-		super.onDragged(pick);
 	}
 
 	private void updateSelection() {
@@ -118,17 +121,16 @@ public class ChromosomeLocationElement extends PickableGLElement implements
 			end = Float.NaN;
 			repaint();
 		}
-		super.onClicked(pick);
 	}
 
 	@Override
 	protected void renderImpl(GLGraphics g, float w, float h) {
 		SelectionManager manager = selections.isEmpty() ? null : selections.get(0);
-		int n = data.size();
+		final int n = data.size();
 		float o = dim.opposite().select(w, h) * 0.1f;
+
 		if (dim.isHorizontal()) {
 			g.color(Color.BLACK).drawLine(0, h * 0.5f, w, h * 0.5f);
-
 		} else {
 			g.color(Color.BLACK).drawLine(w * 0.5f, 0, w * 0.5f, h);
 		}
@@ -150,18 +152,22 @@ public class ChromosomeLocationElement extends PickableGLElement implements
 			}
 		}
 
-		if (!Float.isNaN(start) && !Float.isNaN(end)) {
-			final Color c = SelectionType.SELECTION.getColor();
-			g.color(c.r, c.g, c.b, 0.2f);
-			float a = Math.min(start, end);
-			float b = Math.max(start, end);
-			if (dim.isHorizontal()) {
-				g.fillRect(a * w, o, (b - a) * w, h - o * 2);
-			} else {
-				g.fillRect(o, a * h, w - o * 2, (b - a) * h);
-			}
-		}
+		renderSelectionRange(g, w, h, o);
 		super.renderImpl(g, w, h);
+	}
+
+	private void renderSelectionRange(GLGraphics g, float w, float h, float o) {
+		if (Float.isNaN(start) || Float.isNaN(end))
+			return;
+		final Color c = SelectionType.SELECTION.getColor();
+		g.color(c.r, c.g, c.b, 0.2f);
+		float a = Math.min(start, end);
+		float b = Math.max(start, end);
+		if (dim.isHorizontal()) {
+			g.fillRect(a * w, o, (b - a) * w, h - o * 2);
+		} else {
+			g.fillRect(o, a * h, w - o * 2, (b - a) * h);
+		}
 	}
 
 	/**

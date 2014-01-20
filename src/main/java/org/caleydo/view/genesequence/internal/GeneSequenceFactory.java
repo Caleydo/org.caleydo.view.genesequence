@@ -1,5 +1,8 @@
 package org.caleydo.view.genesequence.internal;
 
+import static org.caleydo.view.genesequence.internal.metadata.ChromosomeMetaData.determineDefaultChromosome;
+import static org.caleydo.view.genesequence.internal.metadata.ChromosomeMetaData.getChromosomes;
+import static org.caleydo.view.genesequence.internal.metadata.ChromosomeMetaData.isCompatible;
 import gleem.linalg.Vec2f;
 
 import java.util.List;
@@ -14,7 +17,6 @@ import org.caleydo.core.view.opengl.layout2.manage.GLElementDimensionDesc;
 import org.caleydo.core.view.opengl.layout2.manage.GLElementFactoryContext;
 import org.caleydo.core.view.opengl.layout2.manage.IGLElementFactory2;
 import org.caleydo.core.view.opengl.layout2.renderer.GLRenderers;
-import org.caleydo.view.genesequence.internal.metadata.ChromosomeMetaData;
 import org.caleydo.view.genesequence.internal.metadata.Gene2ChromosomeLocation;
 import org.caleydo.view.genesequence.ui.ChromosomeLocationElement;
 
@@ -43,9 +45,9 @@ public class GeneSequenceFactory implements IGLElementFactory2 {
 		if (id2range == null) {
 			// no lets to a chromosome mapping
 			String chromosome = context.get("chromosome", String.class, null);
-			Set<String> chromosmes = ChromosomeMetaData.getChromosomes(data, idType);
+			Set<String> chromosmes = getChromosomes(data, idType);
 			if (!chromosmes.contains(chromosome))
-				chromosome = ChromosomeMetaData.determineDefaultChromosome(data, idType);
+				chromosome = determineDefaultChromosome(data, idType);
 			id2range = new Gene2ChromosomeLocation(idType, chromosome);
 		}
 
@@ -62,7 +64,7 @@ public class GeneSequenceFactory implements IGLElementFactory2 {
 		if (context.get("id2range", Function.class, null) == null) { // no function
 			IDType idType = context.get(IDType.class, null);
 			// need a gene id types
-			if (idType == null || !ChromosomeMetaData.isCompatible(idType))
+			if (idType == null || !isCompatible(idType))
 				return false;
 		}
 		return true;
@@ -74,12 +76,17 @@ public class GeneSequenceFactory implements IGLElementFactory2 {
 	}
 
 	@Override
+	public EVisScaleType getScaleType() {
+		return EVisScaleType.FIX;
+	}
+
+	@Override
 	public GLElement createParameters(GLElement elem) {
 		ChromosomeLocationElement c = (ChromosomeLocationElement)elem;
 		Function<Integer, Vec2f> f = c.getId2range();
 		// if we have a Gene2ChromosomeLocation mapping, create a selector for the chromosome
 		if (f instanceof Gene2ChromosomeLocation) {
-			Set<String> chromosomes = ChromosomeMetaData.getChromosomes(c.getData(), c.getIDType());
+			Set<String> chromosomes = getChromosomes(c.getData(), c.getIDType());
 			return new ChromosomeSelector((Gene2ChromosomeLocation) f, elem, chromosomes);
 		}
 		return null;
