@@ -75,10 +75,6 @@ public class GeneSequenceFactory implements IGLElementFactory2 {
 		return ((ChromosomeLocationElement) elem).getDesc(dim);
 	}
 
-	@Override
-	public EVisScaleType getScaleType() {
-		return EVisScaleType.FIX;
-	}
 
 	@Override
 	public GLElement createParameters(GLElement elem) {

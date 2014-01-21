@@ -6,7 +6,8 @@
       <factory
             factory="org.caleydo.view.genesequence.internal.GeneSequenceFactory"
             icon="resources/icons/icon.png"
-            name="Gene Sequence">
+            name="Gene Sequence"
+            scaleType="fix">
       </factory>
    </extension>
    <extension
