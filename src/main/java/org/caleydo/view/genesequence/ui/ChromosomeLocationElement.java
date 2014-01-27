@@ -95,9 +95,16 @@ public class ChromosomeLocationElement extends PickableGLElement implements
 
 	private void updateSelection() {
 		SelectionManager m = selections.get(0);
-		Set<Integer> toSelect = new HashSet<>();
 		float a = Math.min(start, end);
 		float b = Math.max(start, end);
+		Set<Integer> toSelect = getIDs(a, b);
+		m.clearSelection(SelectionType.SELECTION);
+		m.addToType(SelectionType.SELECTION, toSelect);
+		selections.fireSelectionDelta(m);
+	}
+
+	Set<Integer> getIDs(float a, float b) {
+		Set<Integer> toSelect = new HashSet<>();
 		for (Integer id : data) {
 			Vec2f v = id2range.apply(id);
 			if (v == null || Float.isNaN(v.x()) || Float.isNaN(v.y()))
@@ -105,9 +112,7 @@ public class ChromosomeLocationElement extends PickableGLElement implements
 			if ((v.x() >= a && v.x() <= b) || (v.y() >= a && v.y() <= b) || (v.x() < a && v.y() > b))
 				toSelect.add(id);
 		}
-		m.clearSelection(SelectionType.SELECTION);
-		m.addToType(SelectionType.SELECTION, toSelect);
-		selections.fireSelectionDelta(m);
+		return toSelect;
 	}
 
 	@Override
@@ -203,12 +208,15 @@ public class ChromosomeLocationElement extends PickableGLElement implements
 	}
 
 	@Override
-	public GLLocation apply(Integer input) {
-		return GLLocation.applyPrimitive(this, input);
+	public Set<Integer> unapply(GLLocation location) {
+		float total = dim.select(getSize());
+		float a = (float) location.getOffset() / total;
+		float b = (float) location.getOffset2() / total;
+		return getIDs(a, b);
 	}
 
 	@Override
-	public List<GLLocation> apply(Iterable<Integer> dataIndizes) {
-		return GLLocation.apply(this, dataIndizes);
+	public GLLocation apply(Integer input) {
+		return GLLocation.applyPrimitive(this, input);
 	}
 }
