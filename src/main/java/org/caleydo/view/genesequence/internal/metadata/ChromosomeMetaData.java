@@ -108,6 +108,6 @@ public class ChromosomeMetaData {
 	 * @return
 	 */
 	public static boolean isCompatible(IDType idType) {
-		return chromosome.getIDCategory().isOfCategory(idType);
+		return chromosome != null && chromosome.getIDCategory().isOfCategory(idType);
 	}
 }
