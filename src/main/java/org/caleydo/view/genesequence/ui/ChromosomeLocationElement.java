@@ -199,7 +199,7 @@ public class ChromosomeLocationElement extends PickableGLElement implements
 	}
 
 	@Override
-	public GLLocation apply(int dataIndex) {
+	public GLLocation apply(int dataIndex, boolean topLeft) {
 		float total = dim.select(getSize());
 		Vec2f v = id2range.apply(data.get(dataIndex));
 		if (v == null || Float.isNaN(v.x()) || Float.isNaN(v.y()))
@@ -216,7 +216,7 @@ public class ChromosomeLocationElement extends PickableGLElement implements
 	}
 
 	@Override
-	public GLLocation apply(Integer input) {
-		return GLLocation.applyPrimitive(this, input);
+	public GLLocation apply(Integer input, Boolean topLeft) {
+		return GLLocation.applyPrimitive(this, input, topLeft);
 	}
 }
