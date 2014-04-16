@@ -9,6 +9,12 @@
             name="Gene Sequence"
             scaleType="fix">
       </factory>
+      <factory
+            factory="org.caleydo.view.genesequence.internal.MutationLocationFactory"
+            icon="resources/icons/icon.png"
+            name="Mutation Position"
+            scaleType="fix">
+      </factory>
    </extension>
    <extension
          point="org.caleydo.datadomain.DataDomainInitialization">

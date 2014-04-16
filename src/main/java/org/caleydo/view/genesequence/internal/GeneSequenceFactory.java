@@ -46,6 +46,8 @@ public class GeneSequenceFactory implements IGLElementFactory2 {
 			// no lets to a chromosome mapping
 			String chromosome = context.get("chromosome", String.class, null);
 			Set<String> chromosmes = getChromosomes(data, idType);
+			if (chromosmes.isEmpty())
+				return null;
 			if (!chromosmes.contains(chromosome))
 				chromosome = determineDefaultChromosome(data, idType);
 			id2range = new Gene2ChromosomeLocation(idType, chromosome);
