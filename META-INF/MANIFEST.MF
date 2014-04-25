@@ -9,4 +9,5 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: www.caleydo.org
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.caleydo.view.genesequence.internal.Activator
-Export-Package: org.caleydo.view.genesequence.ui
+Export-Package: org.caleydo.view.genesequence.metadata,
+ org.caleydo.view.genesequence.ui

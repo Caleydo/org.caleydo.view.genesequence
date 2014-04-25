@@ -3,7 +3,7 @@
  * Copyright (c) The Caleydo Team. All rights reserved.
  * Licensed under the new BSD license, available at http://caleydo.org/license
  *******************************************************************************/
-package org.caleydo.view.genesequence.internal.metadata;
+package org.caleydo.view.genesequence.metadata;
 
 import gleem.linalg.open.Vec2i;
 

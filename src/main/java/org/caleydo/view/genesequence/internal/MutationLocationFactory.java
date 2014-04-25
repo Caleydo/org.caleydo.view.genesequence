@@ -15,7 +15,7 @@ import org.caleydo.core.view.opengl.layout2.GLElement;
 import org.caleydo.core.view.opengl.layout2.manage.GLElementDimensionDesc;
 import org.caleydo.core.view.opengl.layout2.manage.GLElementFactoryContext;
 import org.caleydo.core.view.opengl.layout2.manage.IGLElementFactory2;
-import org.caleydo.view.genesequence.internal.metadata.ID2ChromosomeLocation;
+import org.caleydo.view.genesequence.metadata.ID2ChromosomeLocation;
 import org.caleydo.view.genesequence.ui.ChromosomeLocationElement;
 
 import com.google.common.base.Function;

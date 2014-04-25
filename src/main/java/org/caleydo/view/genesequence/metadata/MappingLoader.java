@@ -3,12 +3,12 @@
  * Copyright (c) The Caleydo Team. All rights reserved.
  * Licensed under the new BSD license, available at http://caleydo.org/license
  *******************************************************************************/
-package org.caleydo.view.genesequence.internal.metadata;
+package org.caleydo.view.genesequence.metadata;
 
-import static org.caleydo.view.genesequence.internal.metadata.ChromosomeMetaData.chromoseDataDomain;
-import static org.caleydo.view.genesequence.internal.metadata.ChromosomeMetaData.chromosome;
-import static org.caleydo.view.genesequence.internal.metadata.GeneLocationMetaData.location;
-import static org.caleydo.view.genesequence.internal.metadata.GeneLocationMetaData.locationDataDomain;
+import static org.caleydo.view.genesequence.metadata.ChromosomeMetaData.chromoseDataDomain;
+import static org.caleydo.view.genesequence.metadata.ChromosomeMetaData.chromosome;
+import static org.caleydo.view.genesequence.metadata.GeneLocationMetaData.location;
+import static org.caleydo.view.genesequence.metadata.GeneLocationMetaData.locationDataDomain;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;

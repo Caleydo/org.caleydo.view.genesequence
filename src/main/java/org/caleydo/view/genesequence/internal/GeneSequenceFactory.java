@@ -1,8 +1,8 @@
 package org.caleydo.view.genesequence.internal;
 
-import static org.caleydo.view.genesequence.internal.metadata.ChromosomeMetaData.determineDefaultChromosome;
-import static org.caleydo.view.genesequence.internal.metadata.ChromosomeMetaData.getChromosomes;
-import static org.caleydo.view.genesequence.internal.metadata.ChromosomeMetaData.isCompatible;
+import static org.caleydo.view.genesequence.metadata.ChromosomeMetaData.determineDefaultChromosome;
+import static org.caleydo.view.genesequence.metadata.ChromosomeMetaData.getChromosomes;
+import static org.caleydo.view.genesequence.metadata.ChromosomeMetaData.isCompatible;
 import gleem.linalg.Vec2f;
 
 import java.util.List;
@@ -17,7 +17,7 @@ import org.caleydo.core.view.opengl.layout2.manage.GLElementDimensionDesc;
 import org.caleydo.core.view.opengl.layout2.manage.GLElementFactoryContext;
 import org.caleydo.core.view.opengl.layout2.manage.IGLElementFactory2;
 import org.caleydo.core.view.opengl.layout2.renderer.GLRenderers;
-import org.caleydo.view.genesequence.internal.metadata.Gene2ChromosomeLocation;
+import org.caleydo.view.genesequence.metadata.Gene2ChromosomeLocation;
 import org.caleydo.view.genesequence.ui.ChromosomeLocationElement;
 
 import com.google.common.base.Function;
